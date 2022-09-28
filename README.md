@@ -132,3 +132,7 @@ WAIT_ADC:
 		STS   ADCSRA, R18		 ; so that controller clears ADIF
 		RET
 ```
+
+# Running example 
+ 
+Run blink.asm 
