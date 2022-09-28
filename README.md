@@ -65,15 +65,16 @@ To use an I/O pin for analogue input you first need to configure the Analogue-to
 ```c
 ADMUX = 0<<MUX0;               // ADC0 (PB0)
 ADCSRA = 1<<ADEN | 3<<ADPS0;   // Enable ADC, 125kHz clock
-To read an analogue value from the pin we then need to start a conversion, and when the conversion is ready read the ADC register:
+//To read an analogue value from the pin we then need to start a conversion, and when the conversion is ready read the ADC register:
 
 ADCSRA = ADCSRA | 1<<ADSC;     // Start
 while (ADCSRA & 1<<ADSC);      // Wait while conversion in progress
 int temp = ADCL;               // Copy result to temp
 ```
 
-In assembly 
-```assembly`
+In assembly :
+```assembly
+
  ; CALL to Initialize and setup ADC once
 INIT_ADC:  
         ; set up the ADC
@@ -95,44 +96,43 @@ INIT_ADC:
         LDI R18, (1<<MUX0)        ; Analog Channel: ADC1 admux=>01 (PB1)
         OUT ADMUX, R18
         
-		LDI   R20, 0b10000110    ; Enable ADC, ADC prescaler CLK/64
+        LDI   R20, 0b10000110    ; Enable ADC, ADC prescaler CLK/64
         STS   ADCSRA, R20
-		RET
+        RET
           ; FOR INTERRUPT
           ;LDI R19, 0x00 ; Free Running mode
           ;OUT ADCSRB, R19
           ;LDI R20, (1<<ADEN)|(1<<ADSC)|(1<<ADATE)|(1<<ADIE) ; enable, start, trigger, int enable, prescaler=2(min)
           ;OUT ADCSRA, R20
-		
 
- ; To be repeated multiple times
+ ; To be Looped
 REPEAT:
-		CALL  READ_ADC
-		CALL  WAIT_ADC
-		LDS   R18, ADCL            ; Must read ADCL first, and ADCH after that
-		LDS   R19, ADCH            ;
+        CALL  READ_ADC
+        CALL  WAIT_ADC
+        LDS   R18, ADCL 
+        RJMP  REPEAT
 ;-----------------------------------------------------------------------
 
 
 READ_ADC:
-		LDI   R16, 0b01000000     ; Set ADSC in ADCSRA to start conversion 
-		LDS   R17, ADCSRA         ;
-		OR    R17, R16            ; 
-		STS   ADCSRA, R17
-		RET
+        LDI   R16, 0b01000000     ; Set ADSC in ADCSRA to start conversion 
+        LDS   R17, ADCSRA         ;
+        OR    R17, R16            ; 
+        STS   ADCSRA, R17
+        RET
         
 WAIT_ADC:
-		LDS   R16, ADCSRA		 ; check ADIF flag in ADCSRA
-		SBRS  R16, 4       		 ; skip jump when conversion is done (flag set)
-		RJMP  WAIT_ADC    		 ; loop until ADIF flag is set
+        LDS   R16, ADCSRA        ; check ADIF flag in ADCSRA
+        SBRS  R16, 4             ; skip jump when conversion is done (flag set)
+        RJMP  WAIT_ADC           ; loop until ADIF flag is set
         
-		LDI   R17,  0b00010000	 ; Set the flag again to signal 'ready-to-be-cleared' by hardware
-		LDS   R18, ADCSRA		 ;
-		OR    R18, r17			 ;
-		STS   ADCSRA, R18		 ; so that controller clears ADIF
-		RET
+        LDI   R17,  0b00010000   ; Set the flag again to signal 'ready-to-be-cleared' by hardware
+        LDS   R18, ADCSRA        ;
+        OR    R18, r1            ;
+        STS   ADCSRA, R18        ; so that controller clears ADIF
+        RET
 ```
 
-# Running example 
- 
-Run blink.asm 
+# Running example
+
+Run the blink.asm file
