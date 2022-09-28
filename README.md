@@ -1,7 +1,7 @@
-## ATtiny-Assembly
+### ATtiny-Assembly
 ATtiny Assembly
 
-The following sections give some tips on programming the ATtiny10.
+The following sections give some tips on programming the ATtiny10(and series).
 
 # pinMode
 
