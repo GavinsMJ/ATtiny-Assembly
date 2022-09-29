@@ -128,7 +128,7 @@ WAIT_ADC:
         
         LDI   R17,  0b00010000   ; Set the flag again to signal 'ready-to-be-cleared' by hardware
         LDS   R18, ADCSRA        ;
-        OR    R18, r1            ;
+        OR    R18, R17           ;
         STS   ADCSRA, R18        ; so that controller clears ADIF
         RET
 ```
