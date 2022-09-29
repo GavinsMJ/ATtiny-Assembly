@@ -97,7 +97,7 @@ INIT_ADC:
         OUT ADMUX, R18
         
         LDI   R20, 0b10000110    ; Enable ADC, ADC prescaler CLK/64
-        STS   ADCSRA, R20
+        OUT   ADCSRA, R20
         RET
           ; FOR INTERRUPT
           ;LDI R19, 0x00 ; Free Running mode
@@ -118,7 +118,7 @@ READ_ADC:
         LDI   R16, 0b01000000     ; Set ADSC in ADCSRA to start conversion 
         LDS   R17, ADCSRA         ;
         OR    R17, R16            ; 
-        STS   ADCSRA, R17
+        OUT   ADCSRA, R17
         RET
         
 WAIT_ADC:
@@ -129,7 +129,7 @@ WAIT_ADC:
         LDI   R17,  0b00010000   ; Set the flag again to signal 'ready-to-be-cleared' by hardware
         LDS   R18, ADCSRA        ;
         OR    R18, R17           ;
-        STS   ADCSRA, R18        ; so that controller clears ADIF
+        OUT   ADCSRA, R18        ; so that controller clears ADIF
         RET
 ```
 
