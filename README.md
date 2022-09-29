@@ -75,7 +75,10 @@ int temp = ADCL;               // Copy result to temp
 In assembly :
 ```assembly
 
- ; CALL to Initialize and setup ADC once
+.CSEG
+.ORG       0x0000
+
+ ; Initialize and setup ADC once
 INIT_ADC:  
         ; set up the ADC
         ; ADCSRA contains [ADEN, ADSC, ADATE, ADIF, ADIE, ADPS2, ADPS1, ADPS0]
@@ -98,7 +101,7 @@ INIT_ADC:
         
         LDI   R20, 0b10000110    ; Enable ADC, ADC prescaler CLK/64
         OUT   ADCSRA, R20
-        RET
+        
           ; FOR INTERRUPT
           ;LDI R19, 0x00 ; Free Running mode
           ;OUT ADCSRB, R19
@@ -107,30 +110,33 @@ INIT_ADC:
 
  ; To be Looped
 REPEAT:
-        CALL  READ_ADC
-        CALL  WAIT_ADC
-        LDS   R18, ADCL 
-        RJMP  REPEAT
-;-----------------------------------------------------------------------
 
-
-READ_ADC:
+    READ_ADC:
         LDI   R16, 0b01000000     ; Set ADSC in ADCSRA to start conversion 
-        LDS   R17, ADCSRA         ;
+        IN    R17, ADCSRA         ;
         OR    R17, R16            ; 
         OUT   ADCSRA, R17
-        RET
         
-WAIT_ADC:
-        LDS   R16, ADCSRA        ; check ADIF flag in ADCSRA
+    WAIT_ADC:
+        IN    R16, ADCSRA        ; check ADIF flag in ADCSRA
         SBRS  R16, 4             ; skip jump when conversion is done (flag set)
         RJMP  WAIT_ADC           ; loop until ADIF flag is set
         
         LDI   R17,  0b00010000   ; Set the flag again to signal 'ready-to-be-cleared' by hardware
-        LDS   R18, ADCSRA        ;
+        IN    R18, ADCSRA        ;
         OR    R18, R17           ;
         OUT   ADCSRA, R18        ; so that controller clears ADIF
-        RET
+      
+
+        IN    R18, ADCL 
+
+        ; do cool stuff with read value :)
+
+
+        RJMP  REPEAT
+;-----------------------------------------------------------------------
+
+
 ```
 
 # Running example
