@@ -12,14 +12,14 @@
 		LDI   R16, LOW(RAMEND)
 		OUT   SPL, R16
 		CLR   R16
-
-		LDI   R16, 1<<PB0         ; SET PB0 as output
+                   
+		LDI   R16, 1<<PB0        ; SET PB0 as output
 		OUT   DDRB, R16
 
-loop:
+loop:                 
 		SBI   PORTB, 0           ;Set pin PB0 HIGH
 		RCALL       DELAY       
-		CBI   PORTB, 0           ;Set pin PB0 LOW
+		CBI   PORTB, 0           ;clear pin PB0 LOW
 		RCALL       DELAY      
 		RJMP        loop    
 
