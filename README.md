@@ -78,6 +78,15 @@ In assembly :
 .CSEG
 .ORG       0x0000
 
+Start: 
+        
+        ; Set clock divider
+        LDI R16, 0x0011    ; clock divided by 8 for 1MHz (0x00 divides by 1 - RUNS AT 8MHz)
+        LDI R17, 0xD8      ; the key for CCP
+        OUT CCP, R17       ; Configuration Change Protection, allowsprotected changes
+        OUT CLKPSR, R16    ; sets the clock divider
+
+
  ; Initialize and setup ADC once
 INIT_ADC:  
         ; set up the ADC
